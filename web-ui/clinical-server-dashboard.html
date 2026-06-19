@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clinical Server Dashboard</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <style>
+    :root, [data-theme="light"] { --font-body:'Satoshi',Inter,sans-serif; --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem); --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem); --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem); --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem); --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem); --space-2:0.5rem; --space-3:0.75rem; --space-4:1rem; --space-5:1.25rem; --space-6:1.5rem; --space-8:2rem; --color-bg:#f7f6f2; --color-surface:#f9f8f5; --color-surface-2:#fbfbf9; --color-text:#28251d; --color-text-muted:#66645e; --color-text-faint:#9a9892; --color-primary:#01696f; --color-primary-hover:#0c4e54; --color-success:#437a22; --color-warning:#964219; --color-error:#a12c7b; --color-success-bg:#d4dfcc; --color-warning-bg:#ddcfc6; --color-error-bg:#e0ced7; --radius-lg:0.75rem; --radius-xl:1rem; --radius-full:9999px; }
+    [data-theme="dark"] { --color-bg:#171614; --color-surface:#1c1b19; --color-surface-2:#201f1d; --color-text:#e2e0db; --color-text-muted:#aaa8a1; --color-text-faint:#706e68; --color-primary:#4f98a3; --color-primary-hover:#227f8b; --color-success:#6daa45; --color-warning:#bb653b; --color-error:#d163a7; --color-success-bg:#3a4435; --color-warning-bg:#564942; --color-error-bg:#4c3d46; }
+    *{box-sizing:border-box;margin:0;padding:0} html,body{min-height:100%;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)} body{padding:var(--space-4)} button,input,select,textarea{font:inherit} button{cursor:pointer} .app{display:grid;grid-template-columns:280px 1fr;gap:var(--space-4);min-height:calc(100vh - 2rem)} .card{background:var(--color-surface);border:1px solid rgba(0,0,0,.08);border-radius:var(--radius-xl)} .sidebar,.main{padding:var(--space-4)} .sidebar{display:grid;align-content:start;gap:var(--space-4)} .brand{display:flex;align-items:center;gap:var(--space-3)} .brand-mark{width:34px;height:34px;border-radius:10px;background:var(--color-primary);color:#fff;display:grid;place-items:center} .brand h1{font-size:var(--text-lg)} .brand p{font-size:var(--text-xs);color:var(--color-text-muted)} .session-btn,.btn{min-height:44px;border:none;border-radius:999px;padding:0 1rem;background:var(--color-surface-2)} .session-btn.active,.btn.primary{background:var(--color-primary);color:#fff} .toolbar{display:flex;gap:var(--space-3);flex-wrap:wrap} .header{display:flex;justify-content:space-between;gap:var(--space-4);align-items:flex-start;margin-bottom:var(--space-4)} .header h2{font-size:var(--text-xl)} .header p{color:var(--color-text-muted);font-size:var(--text-sm)} .metrics,.content{display:grid;gap:var(--space-4)} .metrics{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:var(--space-4)} .metric,.panel{padding:var(--space-4)} .metric-label{font-size:var(--text-xs);color:var(--color-text-faint);text-transform:uppercase;letter-spacing:.08em} .metric-value{font-size:var(--text-xl);font-weight:800;margin-top:var(--space-2)} .content{grid-template-columns:1.1fr 1fr .85fr} .panel h3{font-size:var(--text-lg);margin-bottom:var(--space-2)} .panel p{color:var(--color-text-muted);font-size:var(--text-sm);margin-bottom:var(--space-3)} .timeline,.prompts,.fields{display:grid;gap:var(--space-3)} .timeline-item,.field-card,.prompt-card{padding:var(--space-3);background:var(--color-surface-2);border-radius:var(--radius-lg)} .meta{display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;font-size:var(--text-xs);color:var(--color-text-faint);margin-bottom:var(--space-2)} .badge{padding:.15rem .6rem;border-radius:var(--radius-full)} .doctor{background:var(--color-warning-bg);color:var(--color-warning)} .patient{background:rgba(1,105,111,.14);color:var(--color-primary)} .good{background:var(--color-success-bg);color:var(--color-success)} .mid{background:var(--color-warning-bg);color:var(--color-warning)} .low{background:var(--color-error-bg);color:var(--color-error)} .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)} .full{grid-column:1 / -1} .field-top{display:flex;justify-content:space-between;gap:var(--space-2);margin-bottom:var(--space-2)} .status-filled{background:var(--color-success-bg);color:var(--color-success)} .status-review{background:var(--color-warning-bg);color:var(--color-warning)} .status-missing{background:rgba(0,0,0,.06);color:var(--color-text-muted)} .footer-note{margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-faint)} @media (max-width:1100px){.content{grid-template-columns:1fr 1fr}.content > :last-child{grid-column:1 / -1}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}} @media (max-width:840px){.app,.content,.metrics,.form-grid{grid-template-columns:1fr}.header{flex-direction:column}.content > :last-child{grid-column:auto}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar card">
+      <div class="brand"><div class="brand-mark">+</div><div><h1>Clinical Server</h1><p>RPC ingest + conversation reasoning</p></div></div>
+      <div class="toolbar" id="sessionButtons"></div>
+      <button class="btn primary" id="loadDemo">Load demo data</button>
+      <button class="btn" id="refresh">Refresh</button>
+    </aside>
+    <main class="main card">
+      <div class="header">
+        <div><h2 id="sessionTitle">Visit 001</h2><p id="sessionSubtitle">Merged doctor/patient timeline with configurable form population.</p></div>
+        <div class="toolbar"><button class="btn" id="themeToggle">Toggle theme</button></div>
+      </div>
+      <section class="metrics">
+        <div class="metric card"><div class="metric-label">Active prompts</div><div class="metric-value" id="metricPrompts">0</div></div>
+        <div class="metric card"><div class="metric-label">Fields filled</div><div class="metric-value" id="metricFields">0 / 0</div></div>
+        <div class="metric card"><div class="metric-label">Needs review</div><div class="metric-value" id="metricReview">0</div></div>
+        <div class="metric card"><div class="metric-label">Model path</div><div class="metric-value" style="font-size:var(--text-sm);font-weight:700">OpenRouter / heuristic</div></div>
+      </section>
+      <section class="content">
+        <article class="panel card"><h3>Conversation timeline</h3><p>Doctor questions and patient answers stay on one timeline so extraction can use context.</p><div id="timeline" class="timeline"></div></article>
+        <article class="panel card"><h3>Medical form</h3><p>Field list and relative layout come from the server-side template.</p><div id="fields" class="form-grid"></div><p class="footer-note">The backend accepts RPC transcript batches, applies LLM-backed or heuristic extraction, and returns field values plus follow-up prompts.</p></article>
+        <article class="panel card"><h3>Follow-up prompts</h3><p>If information is missing, inconsistent, or weakly supported, the server prompts for more questions.</p><div id="prompts" class="prompts"></div></article>
+      </section>
+    </main>
+  </div>
+  <script>
+    let currentSession = 'visit-001';
+    let currentTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+    async function fetchJSON(url, options) {
+      const r = await fetch(url, options);
+      if (!r.ok) throw new Error('Request failed');
+      return r.json();
+    }
+    function confClass(v){ if(v >= 0.85) return 'good'; if(v >= 0.7) return 'mid'; return 'low'; }
+    function statusClass(s){ return s === 'filled' ? 'status-filled' : s === 'review' ? 'status-review' : 'status-missing'; }
+
+    async function render() {
+      const template = await fetchJSON('/api/template');
+      const session = await fetchJSON(`/api/sessions/${currentSession}`);
+      document.getElementById('sessionTitle').textContent = currentSession.replace('visit-', 'Visit ');
+
+      const fields = Object.values(session.fields || {});
+      const filled = fields.filter(f => f.status !== 'missing').length;
+      const review = fields.filter(f => f.status === 'review').length;
+      document.getElementById('metricFields').textContent = `${filled} / ${template.fields.length}`;
+      document.getElementById('metricReview').textContent = String(review);
+      document.getElementById('metricPrompts').textContent = String((session.followups || []).length);
+
+      document.getElementById('timeline').innerHTML = (session.timeline || []).map(item => `
+        <div class="timeline-item">
+          <div class="meta"><span class="badge ${item.speaker_role}">${item.speaker_role}</span><span>${item.start.toFixed ? item.start.toFixed(1) : item.start}</span><span class="badge ${confClass(item.confidence || 0)}">conf ${(item.confidence || 0).toFixed(2)}</span></div>
+          <div>${item.text}</div>
+        </div>`).join('') || '<div class="timeline-item">No transcript data yet.</div>';
+
+      const ordered = [...template.fields].sort((a,b) => (a.position.row - b.position.row) || (a.position.col - b.position.col));
+      document.getElementById('fields').innerHTML = ordered.map(field => {
+        const value = session.fields[field.key] || { value:null, confidence:0, status:'missing', evidence:[] };
+        return `
+          <div class="field-card ${field.position.span === 2 ? 'full' : ''}">
+            <div class="field-top"><strong>${field.label}</strong><span class="badge ${statusClass(value.status)}">${value.status}</span></div>
+            <div>${value.value || '<span style="color:var(--color-text-faint)">Awaiting answer</span>'}</div>
+            <div class="meta"><span>conf ${(value.confidence || 0).toFixed(2)}</span><span>${(value.evidence || []).join('; ') || 'No evidence yet'}</span></div>
+          </div>`;
+      }).join('');
+
+      document.getElementById('prompts').innerHTML = (session.followups || []).map(prompt => `
+        <div class="prompt-card"><strong>${prompt.field_key}</strong><div style="margin-top:.35rem">${prompt.prompt}</div><div class="meta"><span class="badge ${prompt.severity === 'high' ? 'low' : 'mid'}">${prompt.severity}</span><span>${prompt.reason}</span></div></div>`).join('') || '<div class="prompt-card">No follow-up questions at the moment.</div>';
+
+      const sessions = ['visit-001','visit-002','visit-003'];
+      document.getElementById('sessionButtons').innerHTML = sessions.map(id => `<button class="session-btn ${id===currentSession?'active':''}" data-id="${id}">${id}</button>`).join('');
+      document.querySelectorAll('.session-btn').forEach(btn => btn.addEventListener('click', () => { currentSession = btn.dataset.id; render(); }));
+    }
+
+    document.getElementById('loadDemo').addEventListener('click', async () => { await fetchJSON('/api/demo/load', { method:'POST' }); currentSession = 'visit-001'; render(); });
+    document.getElementById('refresh').addEventListener('click', render);
+    document.getElementById('themeToggle').addEventListener('click', () => { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', currentTheme); });
+    render();
+  </script>
+</body>
+</html>

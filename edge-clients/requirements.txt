@@ -1,0 +1,8 @@
+numpy
+sounddevice
+whisper-timestamped
+openai-whisper
+torch
+torchaudio
+onnxruntime
+fspyrpc

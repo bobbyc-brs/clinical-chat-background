@@ -1,0 +1,44 @@
+form_name: General Intake Form
+fields:
+  - key: chief_complaint
+    label: Chief Complaint
+    section: Presenting Problem
+    synonyms: [complaint, problem, issue, symptom, symptoms]
+    prompt_if_missing: What is the patient's main complaint today?
+    prompt_if_conflict: Can you clarify the main complaint?
+    position: {row: 1, col: 1, span: 2}
+  - key: duration
+    label: Duration
+    section: Presenting Problem
+    synonyms: [duration, onset, started, how long, days, weeks]
+    prompt_if_missing: How long has this been going on?
+    prompt_if_conflict: Can you confirm when the symptoms started?
+    position: {row: 2, col: 1}
+  - key: allergies
+    label: Allergies
+    section: Safety
+    synonyms: [allergy, allergies, allergic]
+    prompt_if_missing: Do you have any allergies?
+    prompt_if_conflict: Can you clarify the allergy information?
+    position: {row: 2, col: 2}
+  - key: symptoms
+    label: Symptoms
+    section: Presenting Problem
+    synonyms: [cough, pain, fever, nausea, tightness, symptoms]
+    prompt_if_missing: What symptoms is the patient experiencing?
+    prompt_if_conflict: Can you describe the symptoms more specifically?
+    position: {row: 3, col: 1, span: 2}
+  - key: medications
+    label: Medications
+    section: Medications
+    synonyms: [medications, medicine, taking, prescription, drug]
+    prompt_if_missing: Are you taking any medications right now?
+    prompt_if_conflict: Can you confirm the current medications?
+    position: {row: 4, col: 1}
+  - key: history
+    label: Relevant History
+    section: History
+    synonyms: [history, prior, previous, chronic, diagnosis]
+    prompt_if_missing: Is there any relevant medical history?
+    prompt_if_conflict: Can you clarify the relevant medical history?
+    position: {row: 4, col: 2}

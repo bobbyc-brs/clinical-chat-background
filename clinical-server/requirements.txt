@@ -1,0 +1,5 @@
+flask
+pydantic>=2.7
+requests
+PyYAML>=6.0
+fspyrpc
