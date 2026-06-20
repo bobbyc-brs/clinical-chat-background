@@ -1,7 +1,11 @@
 from flask import Flask, jsonify
 from copy import deepcopy
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+
+CORS(app, resources={r"/api/*": {"origins": "*","allow_headers": ["Content-Type", "ngrok-skip-browser-warning"]}})
 
 @app.route('/')
 def index():

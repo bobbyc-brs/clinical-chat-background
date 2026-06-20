@@ -8,7 +8,7 @@ from flask_cors import CORS
 from copy import deepcopy
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*", "allow_headers": ["Content-Type", "ngrok-skip-browser-warning"]}})
 
 app_state = {"tick": 0}
 
@@ -277,7 +277,7 @@ def make_followup(fields, key):
         reason = "Unlocked by conversation context."
     else:
         reason = "Not yet covered in the conversation."
-    return {"field_key": key, "severity": severity, "prompt": prompt, "reason": reason}
+    return {"field_key": key, "label": fields[key]["label"], "severity": severity, "prompt": prompt, "reason": reason}
 
 def top_followups(fields):
     scored = sorted(
