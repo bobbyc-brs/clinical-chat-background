@@ -1,0 +1,36 @@
+Sample Scenario: Weather-Related Headache Visit
+
+Visit ID: visit-001
+Doctor Device: doctor-device
+Patient Device: patient-device
+Clinical Context: The patient booked the visit because headaches started when the weather became warmer.
+
+Conversation flow
+
+[00:00] Doctor: Hi, what brings you in today?
+[00:03] Patient: I've been getting headaches since the weather started getting warmer.
+[00:06] Doctor: When did you first notice them?
+[00:09] Patient: About two weeks ago, when the hot days started.
+[00:12] Doctor: How often are you getting the headaches?
+[00:15] Patient: Almost every afternoon.
+[00:18] Doctor: Where do you feel the pain?
+[00:21] Patient: Mostly across my forehead and sometimes behind my eyes.
+[00:24] Doctor: How severe are they, from zero to ten?
+[00:27] Patient: Usually around a six.
+[00:30] Doctor: Any nausea, vision changes, or dizziness?
+[00:33] Patient: No nausea, but I do feel a little light-sensitive.
+[00:36] Doctor: Do they get better with water, rest, or medication?
+[00:39] Patient: Drinking water and resting in a cool room seems to help.
+[00:42] Doctor: Have you had headaches like this before?
+[00:45] Patient: Not this often. Maybe once in a while, but not like this.
+[00:48] Doctor: Are you drinking enough during the day, especially in the heat?
+[00:51] Patient: Probably not. I've been outside more and I think I'm getting dehydrated.
+[00:54] Doctor: Any fever, weakness, or sudden severe headache?
+[00:57] Patient: No, nothing like that.
+[01:00] Doctor: Okay. We'll note that these seem related to heat and dehydration and talk about prevention.
+
+Notes for front-end testing
+- The conversation arrives progressively, not all at once.
+- Each API poll should show a slightly larger timeline.
+- Metrics, fields, and follow-up suggestions should evolve with the timeline.
+- This scenario is meant for UI testing only.
