@@ -3,6 +3,15 @@ from copy import deepcopy
 
 app = Flask(__name__)
 
+
+@app.route('/')
+def index():
+    return jsonify({"message": "Welcome to the TARS Health URL"})
+
+@app.route('/health')
+def health():
+    return jsonify({"status": "healthy"}), 200
+ 
 SEGMENTS = [
     {"segment_id": 1, "start": 0, "end": 3, "speaker_role": "doctor", "device_id": "doctor-device", "text": "Hi, what brings you in today?", "confidence": 0.97},
     {"segment_id": 2, "start": 3, "end": 6, "speaker_role": "patient", "device_id": "patient-device", "text": "I've been getting headaches since the weather started getting warmer.", "confidence": 0.94},
@@ -185,4 +194,5 @@ def current_tick():
     return jsonify({"tick": TICKS["value"], "remaining": max(0, len(SEGMENTS) - 1 - TICKS["value"])})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=12345, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
+
