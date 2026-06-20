@@ -3,7 +3,6 @@ from copy import deepcopy
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def index():
     return jsonify({"message": "Welcome to the TARS Health URL"})
@@ -11,7 +10,7 @@ def index():
 @app.route('/health')
 def health():
     return jsonify({"status": "healthy"}), 200
- 
+
 SEGMENTS = [
     {"segment_id": 1, "start": 0, "end": 3, "speaker_role": "doctor", "device_id": "doctor-device", "text": "Hi, what brings you in today?", "confidence": 0.97},
     {"segment_id": 2, "start": 3, "end": 6, "speaker_role": "patient", "device_id": "patient-device", "text": "I've been getting headaches since the weather started getting warmer.", "confidence": 0.94},
@@ -48,21 +47,11 @@ SEGMENTS = [
 ]
 
 FIELD_ORDER = [
-    ("chief_complaint", "Chief Complaint"),
-    ("onset", "Onset"),
-    ("frequency", "Frequency"),
-    ("location", "Location"),
-    ("severity", "Severity"),
-    ("associated_symptoms", "Associated Symptoms"),
-    ("relieving_factors", "Relieving Factors"),
-    ("hydration_context", "Hydration / Heat Context"),
-    ("red_flags", "Red Flags"),
-    ("blood_pressure", "Blood Pressure"),
-    ("sleep_disruption", "Sleep Disruption"),
-    ("asa_allergy", "ASA Allergy"),
-    ("treatment_plan", "Treatment Plan"),
-    ("followup_interval", "Follow-up Interval"),
-    ("air_conditioning", "Air Conditioning"),
+    ("chief_complaint", "Chief Complaint"), ("onset", "Onset"), ("frequency", "Frequency"), ("location", "Location"),
+    ("severity", "Severity"), ("associated_symptoms", "Associated Symptoms"), ("relieving_factors", "Relieving Factors"),
+    ("hydration_context", "Hydration / Heat Context"), ("red_flags", "Red Flags"), ("blood_pressure", "Blood Pressure"),
+    ("sleep_disruption", "Sleep Disruption"), ("asa_allergy", "ASA Allergy"), ("treatment_plan", "Treatment Plan"),
+    ("followup_interval", "Follow-up Interval"), ("air_conditioning", "Air Conditioning")
 ]
 
 TICKS = {"value": 0}
@@ -74,22 +63,20 @@ def build_screen_areas(visible_count):
     allergies = {"label": "Allergies", "value": None, "status": "missing", "confidence": 0.0, "why": "Not answered yet."}
     symptoms = {"label": "Symptoms", "value": None, "status": "missing", "confidence": 0.0, "why": "Chief symptom not described yet."}
     followup_area = []
-
     if visible_count >= 2:
-        symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather.", "status": "partial", "confidence": 0.72, "why": "Initial symptom reported, but details still incomplete."}
+        symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather.", "status": "review", "confidence": 0.72, "why": "Initial symptom reported, but details still incomplete."}
     if visible_count >= 4:
-        symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather, began about two weeks ago.", "status": "partial", "confidence": 0.80, "why": "Timing is now known, but pattern and associated symptoms are still incomplete."}
+        symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather, began about two weeks ago.", "status": "review", "confidence": 0.80, "why": "Timing is now known, but pattern and associated symptoms are still incomplete."}
     if visible_count >= 6:
-        symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather, began about two weeks ago, almost every afternoon.", "status": "partial", "confidence": 0.84, "why": "Frequency is known, but symptom detail is still incomplete."}
+        symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather, began about two weeks ago, almost every afternoon.", "status": "review", "confidence": 0.84, "why": "Frequency is known, but symptom detail is still incomplete."}
     if visible_count >= 8:
-        symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather, almost every afternoon, mostly forehead and behind the eyes.", "status": "partial", "confidence": 0.88, "why": "Location is now known, but associated symptoms are still incomplete."}
+        symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather, almost every afternoon, mostly forehead and behind the eyes.", "status": "filled", "confidence": 0.88, "why": "Location is now known and the symptom is usable."}
     if visible_count >= 12:
         symptoms = {"label": "Symptoms", "value": "Headaches since warmer weather, almost every afternoon, forehead and behind the eyes, with mild light sensitivity and no nausea.", "status": "filled", "confidence": 0.91, "why": "Core symptom description is now sufficient to populate the field."}
     if visible_count >= 26:
-        allergies = {"label": "Allergies", "value": None, "status": "pending_answer", "confidence": 0.0, "why": "Doctor has asked about ASA allergy, but the patient has not answered yet."}
+        allergies = {"label": "Allergies", "value": None, "status": "missing", "confidence": 0.0, "why": "Doctor has asked about ASA allergy, but the patient has not answered yet."}
     if visible_count >= 27:
         allergies = {"label": "Allergies", "value": "No ASA allergy reported.", "status": "filled", "confidence": 0.94, "why": "Patient explicitly denied ASA allergy."}
-
     if visible_count < 12:
         followup_area.append({"label": "Symptoms detail", "value": "Ask more about symptoms.", "status": "active", "why": "Symptoms are still incomplete."})
     if visible_count < 26:
@@ -104,95 +91,70 @@ def build_screen_areas(visible_count):
         followup_area.append({"label": "Air conditioning", "value": "Await answer about air conditioning.", "status": "active", "why": "Doctor asked but patient has not answered yet."})
     if visible_count >= 31:
         followup_area.append({"label": "Air conditioning", "value": "No air conditioning in the bedroom.", "status": "filled", "why": "Patient answered the question."})
-    return {
-        "conversation_timeline": "Use timeline[] for the visible doctor/patient utterances.",
-        "medical_form": [allergies, symptoms],
-        "followup": followup_area,
-    }
+    return {"conversation_timeline": "Use timeline[] for the visible doctor/patient utterances.", "medical_form": [allergies, symptoms], "followup": followup_area}
 
 def build_state(tick: int):
     visible_count = min(len(SEGMENTS), tick + 1)
     timeline = deepcopy(SEGMENTS[:visible_count])
     fields = {key: empty_field(label) for key, label in FIELD_ORDER}
     followups = []
-
     def set_field(key, value, confidence, evidence):
+        fields[key]["key"] = key
         fields[key]["value"] = value
         fields[key]["confidence"] = confidence
         fields[key]["status"] = "filled" if confidence >= 0.85 else "review"
         fields[key]["evidence"] = [evidence]
-
-    if visible_count >= 2:
-        set_field("chief_complaint", "Headaches starting with warmer weather", 0.94, SEGMENTS[1]["text"])
-    if visible_count >= 4:
-        set_field("onset", "About two weeks ago when hot weather started", 0.90, SEGMENTS[3]["text"])
-    if visible_count >= 6:
-        set_field("frequency", "Almost every afternoon", 0.89, SEGMENTS[5]["text"])
-    if visible_count >= 8:
-        set_field("location", "Forehead and sometimes behind the eyes", 0.88, SEGMENTS[7]["text"])
-    if visible_count >= 10:
-        set_field("severity", "6 / 10", 0.86, SEGMENTS[9]["text"])
-    if visible_count >= 12:
-        set_field("associated_symptoms", "Light sensitivity; denies nausea", 0.84, SEGMENTS[11]["text"])
-    if visible_count >= 14:
-        set_field("relieving_factors", "Water and rest in a cool room help", 0.90, SEGMENTS[13]["text"])
-    if visible_count >= 18:
-        set_field("hydration_context", "More time outside, likely dehydration in heat", 0.82, SEGMENTS[17]["text"])
-    if visible_count >= 20:
-        set_field("red_flags", "Denies fever, weakness, or sudden severe headache", 0.91, SEGMENTS[19]["text"])
-    if visible_count >= 23:
-        set_field("blood_pressure", "125/75, fine", 0.98, SEGMENTS[22]["text"])
-    if visible_count >= 25:
-        set_field("sleep_disruption", "Dogs waking patient early; poor sleep", 0.87, SEGMENTS[24]["text"])
-    if visible_count >= 27:
-        set_field("asa_allergy", "No ASA allergy reported", 0.94, SEGMENTS[26]["text"])
-    if visible_count >= 28:
-        set_field("treatment_plan", "Suggested Tylenol, hydration, and cooling down", 0.95, SEGMENTS[27]["text"])
-    if visible_count >= 29:
-        set_field("followup_interval", "10 days", 0.95, SEGMENTS[28]["text"])
-    if visible_count >= 31:
-        set_field("air_conditioning", "No air conditioning in bedroom", 0.91, SEGMENTS[30]["text"])
-
+    if visible_count >= 2: set_field("chief_complaint", "Headaches starting with warmer weather", 0.94, SEGMENTS[1]["text"])
+    if visible_count >= 4: set_field("onset", "About two weeks ago when hot weather started", 0.90, SEGMENTS[3]["text"])
+    if visible_count >= 6: set_field("frequency", "Almost every afternoon", 0.89, SEGMENTS[5]["text"])
+    if visible_count >= 8: set_field("location", "Forehead and sometimes behind the eyes", 0.88, SEGMENTS[7]["text"])
+    if visible_count >= 10: set_field("severity", "6 / 10", 0.86, SEGMENTS[9]["text"])
+    if visible_count >= 12: set_field("associated_symptoms", "Light sensitivity; denies nausea", 0.84, SEGMENTS[11]["text"])
+    if visible_count >= 14: set_field("relieving_factors", "Water and rest in a cool room help", 0.90, SEGMENTS[13]["text"])
+    if visible_count >= 18: set_field("hydration_context", "More time outside, likely dehydration in heat", 0.82, SEGMENTS[17]["text"])
+    if visible_count >= 20: set_field("red_flags", "Denies fever, weakness, or sudden severe headache", 0.91, SEGMENTS[19]["text"])
+    if visible_count >= 23: set_field("blood_pressure", "125/75, fine", 0.98, SEGMENTS[22]["text"])
+    if visible_count >= 25: set_field("sleep_disruption", "Dogs waking patient early; poor sleep", 0.87, SEGMENTS[24]["text"])
+    if visible_count >= 27: set_field("asa_allergy", "No ASA allergy reported", 0.94, SEGMENTS[26]["text"])
+    if visible_count >= 28: set_field("treatment_plan", "Suggested Tylenol, hydration, and cooling down", 0.95, SEGMENTS[27]["text"])
+    if visible_count >= 29: set_field("followup_interval", "10 days", 0.95, SEGMENTS[28]["text"])
+    if visible_count >= 31: set_field("air_conditioning", "No air conditioning in bedroom", 0.91, SEGMENTS[30]["text"])
     for key, field in fields.items():
+        field.setdefault("key", key)
         if field["status"] == "missing":
             followups.append({"field_key": key, "severity": "medium", "prompt": f"Ask about {field['label'].lower()}.", "reason": "missing"})
         elif field["status"] == "review":
             followups.append({"field_key": key, "severity": "high", "prompt": f"Confirm {field['label'].lower()}.", "reason": "low_confidence"})
-
     metrics = {
         "nbActivePrompts": len(followups),
-        "nbFieldsFilled": sum(1 for f in fields.values() if f["status"] != "missing"),
+        "nbFieldsFilled": sum(1 for f in fields.values() if f["status"] == "filled"),
         "nbNeedsReview": sum(1 for f in fields.values() if f["status"] == "review"),
-        "nbTimelineEntries": len(timeline),
     }
-    screen_areas = build_screen_areas(visible_count)
     return {
-        "session_id": "visit-001",
-        "tick": tick,
+        "updated_at": float(visible_count),
         "metrics": metrics,
         "timeline": timeline,
         "fields": fields,
         "followups": followups,
-        "screen_areas": screen_areas,
+        "screen_areas": build_screen_areas(visible_count),
     }
 
-@app.route('/api/sessions/visit-001')
-def session_visit_001():
-    tick = TICKS["value"]
+@app.route('/api/session')
+def session_fixed():
+    tick = TICKS['value']
     state = build_state(tick)
-    if TICKS["value"] < len(SEGMENTS) - 1:
-        TICKS["value"] += 1
+    if TICKS['value'] < len(SEGMENTS) - 1:
+        TICKS['value'] += 1
     return jsonify(state)
 
 @app.route('/api/reset', methods=['POST', 'GET'])
 def reset():
-    TICKS["value"] = 0
+    TICKS['value'] = 0
     return jsonify({"ok": True, "tick": 0})
 
 @app.route('/api/state')
 def current_tick():
-    return jsonify({"tick": TICKS["value"], "remaining": max(0, len(SEGMENTS) - 1 - TICKS["value"])})
+    return jsonify({"tick": TICKS['value'], "remaining": max(0, len(SEGMENTS) - 1 - TICKS['value'])})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
-
