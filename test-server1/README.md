@@ -1,9 +1,12 @@
-# Mock Visit API
+# Mock Visit API - ASA Allergy and Tylenol Scenario
 
-This folder contains:
+This package contains an updated front-end testing scenario and API server.
 
-- `headache-weather-scenario.txt`: a scripted doctor-patient scenario for UI testing.
-- `mock_visit_api.py`: a Flask server that serves evolving state for `visit-001` on port `12345`.
+## Files
+
+- `headache-weather-scenario.txt` — scripted doctor-patient conversation
+- `mock_visit_api.py` — Flask API server on port 12345
+- `evolving-screen-state-sequence.json` — placeholder companion artifact
 
 ## Install
 
@@ -19,7 +22,7 @@ pip install flask
 python mock_visit_api.py
 ```
 
-The API will be available at:
+Then open or query:
 
 ```text
 http://localhost:12345/api/sessions/visit-001
@@ -27,20 +30,7 @@ http://localhost:12345/api/sessions/visit-001
 
 ## Behavior
 
-- Each GET to `/api/sessions/visit-001` reveals one more 3-second interval of the scripted conversation.
-- The payload always includes `metrics`, `timeline`, `fields`, and `followups` in one response.
-- Reset with:
-
-```text
-GET or POST /api/reset
-```
-
-## Front-end polling example
-
-```javascript
-setInterval(async () => {
-  const resp = await fetch('http://localhost:12345/api/sessions/visit-001');
-  const state = await resp.json();
-  renderUI(state);
-}, 3000);
-```
+- Each GET reveals one more 3-second interval.
+- The payload includes `metrics`, `timeline`, `fields`, `followups`, and `screen_areas`.
+- The scenario now asks about ASA allergy, records a negative response, and recommends Tylenol instead.
+- Reset progression with `GET /api/reset`.

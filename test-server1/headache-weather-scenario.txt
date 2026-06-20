@@ -1,4 +1,4 @@
-Sample Scenario: Weather-Related Headache Visit
+Sample Scenario: Weather-Related Headache Visit with Allergy Check
 
 Visit ID: visit-001
 Doctor Device: doctor-device
@@ -27,7 +27,18 @@ Conversation flow
 [00:51] Patient: Probably not. I've been outside more and I think I'm getting dehydrated.
 [00:54] Doctor: Any fever, weakness, or sudden severe headache?
 [00:57] Patient: No, nothing like that.
-[01:00] Doctor: Okay. We'll note that these seem related to heat and dehydration and talk about prevention.
+[01:00] Doctor: Can we check your blood pressure?
+[01:03] Patient: Sure.
+[01:06] Doctor: Your blood pressure is fine at 125 over 75.
+[01:09] Doctor: Is anything else bothering you?
+[01:12] Patient: The dogs have been waking me up really early, so I have not been sleeping well.
+[01:15] Doctor: Are you allergic to ASAs?
+[01:18] Patient: No, I'm not allergic to ASAs.
+[01:21] Doctor: I would suggest Tylenol for headache relief, plus more water and cooling down.
+[01:24] Doctor: I'd like to follow up in 10 days.
+[01:27] Doctor: Do you have air conditioning at home?
+[01:30] Patient: No, not in the bedroom.
+[01:33] Doctor: Okay. Heat, dehydration, and poor sleep may all be contributing, so let's work on those.
 
 Notes for front-end testing
 - The conversation arrives progressively, not all at once.
